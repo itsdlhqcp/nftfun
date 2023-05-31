@@ -6,7 +6,8 @@ import { ethers } from "ethers";
 import * as util from "ethereumjs-util";
 
 const NETWORKS = {
-  "5777": "Ganache"
+  "5777": "Ganache",
+  "11155111": "Sepolia"
 }
 
 type NETWORK = typeof NETWORKS;
@@ -28,12 +29,16 @@ export function withSession(handler: any) {
     }
   })
 }
+
+const url = process.env.NODE_ENV === "production" ? 
+  "https://sepolia.infura.io/v3/55b8d44cb28846dab074aa934bfe488c" : 
+  "http://127.0.0.1:7545";
 //address check middleware which verify data
 export const addressCheckMiddleware = async (req: NextApiRequest & { session: Session}, res: NextApiResponse) => {
   return new Promise(async(resolve, reject) => {
     const message = req.session.get("message-session");
 //this is provider working at server-for signning the message-getting contract
-    const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:7545");
+    const provider = new ethers.providers.JsonRpcProvider(url);
     const contract = new ethers.Contract(
       contractAddress,
       abi,
